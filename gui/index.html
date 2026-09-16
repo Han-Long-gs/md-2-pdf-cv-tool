@@ -1,0 +1,167 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>md2pdf-cv</title>
+<style>
+  :root {
+    --chrome-bg: #f4f4f4;
+    --chrome-border: #ccc;
+    --chrome-text: #111;
+    --chrome-muted: #666;
+    --error: #a30000;
+    --ok: #1a1a1a;
+  }
+  * { box-sizing: border-box; }
+  html, body {
+    margin: 0;
+    height: 100%;
+    font-family: -apple-system, "Helvetica Neue", Arial, sans-serif;
+    color: var(--chrome-text);
+    background: var(--chrome-bg);
+  }
+  #app {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+  }
+  #topbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 14px;
+    background: #e9e9e9;
+    border-bottom: 1px solid var(--chrome-border);
+    flex-wrap: wrap;
+  }
+  #topbar label {
+    font-size: 12px;
+    color: var(--chrome-muted);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  #title-input {
+    padding: 6px 8px;
+    font-size: 13px;
+    border: 1px solid var(--chrome-border);
+    border-radius: 4px;
+    min-width: 200px;
+  }
+  #md-dropzone {
+    padding: 6px 12px;
+    font-size: 12px;
+    color: var(--chrome-muted);
+    border: 1px dashed #999;
+    border-radius: 4px;
+    background: #fff;
+    white-space: nowrap;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+  }
+  #md-dropzone.dragover {
+    background: #e8f0fe;
+    border-color: #4285f4;
+    color: #1a1a1a;
+  }
+  #font-size {
+    width: 140px;
+  }
+  #font-size-label {
+    font-size: 12px;
+    color: var(--chrome-muted);
+    min-width: 42px;
+  }
+  button {
+    padding: 7px 14px;
+    font-size: 13px;
+    border: 1px solid #333;
+    background: #222;
+    color: #fff;
+    border-radius: 4px;
+    cursor: pointer;
+  }
+  button:disabled {
+    opacity: 0.5;
+    cursor: default;
+  }
+  button.secondary {
+    background: #fff;
+    color: #222;
+  }
+  #status {
+    margin-left: auto;
+    font-size: 12px;
+    max-width: 360px;
+    text-align: right;
+  }
+  #status.error { color: var(--error); font-weight: bold; }
+  #status.ok { color: var(--ok); }
+  #dep-banner {
+    display: none;
+    padding: 8px 14px;
+    background: #fff3cd;
+    border-bottom: 1px solid #e0c26a;
+    font-size: 12px;
+    color: #664d03;
+  }
+  #panes {
+    flex: 1;
+    display: flex;
+    min-height: 0;
+  }
+  #markdown-input {
+    width: 50%;
+    border: none;
+    border-right: 1px solid var(--chrome-border);
+    resize: none;
+    padding: 14px;
+    font-family: "SF Mono", "Courier New", monospace;
+    font-size: 13px;
+    line-height: 1.5;
+    outline: none;
+  }
+  #preview-frame {
+    width: 50%;
+    border: none;
+    background: #fff;
+  }
+</style>
+</head>
+<body>
+<div id="app">
+  <div id="dep-banner"></div>
+  <div id="topbar">
+    <label>Title
+      <input id="title-input" type="text" placeholder="e.g. Jane_Doe_CV">
+    </label>
+    <div id="md-dropzone">Drag .md file here</div>
+    <label>Font size
+      <input id="font-size" type="range" min="9" max="18" step="1" value="9">
+      <span id="font-size-label">9pt</span>
+    </label>
+    <button id="btn-preview" class="secondary">Preview</button>
+    <button id="btn-accept">Accept &rarr; Save PDF</button>
+    <span id="status"></span>
+  </div>
+  <div id="panes">
+    <textarea id="markdown-input" placeholder="Paste your Markdown CV here...
+
+# Jane Doe
+jane@example.com | (555) 555-1234 | City, State
+
+## Experience
+### Senior Engineer — Acme Corp
+2021 - Present
+- Did the thing
+- Led the other thing
+
+## Education
+### B.S. Computer Science — State University
+2016 - 2020
+"></textarea>
+    <iframe id="preview-frame" title="preview"></iframe>
+  </div>
+</div>
+<script src="script.js"></script>
+</body>
+</html>

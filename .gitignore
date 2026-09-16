@@ -1,0 +1,5 @@
+.venv/
+.VSCodeCounter/
+.DS_Store
+output/
+__pycache__/
