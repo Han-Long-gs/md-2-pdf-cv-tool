@@ -11,6 +11,7 @@
   const mdDropzone = document.getElementById("md-dropzone");
 
   let debounceTimer = null;
+  let lastEntries = [];
 
   function setStatus(msg, isError) {
     statusEl.textContent = msg || "";
@@ -78,6 +79,7 @@
       );
       if (result.ok) {
         previewFrame.srcdoc = result.html;
+        lastEntries = result.entries || [];
         setStatus("Preview updated.", false);
       } else {
         setStatus(result.error, true);
@@ -120,6 +122,14 @@
     debounceTimer = setTimeout(doPreview, 300);
   }
 
+  function deriveTitleFromFilename(filename) {
+    return filename
+      .replace(/\.md$/i, "")
+      .replace(/[_-]+/g, " ")
+      .replace(/\s+/g, " ")
+      .trim();
+  }
+
   function loadDroppedFile(file) {
     if (!file.name.toLowerCase().endsWith(".md")) {
       setStatus("Please drop a .md file.", true);
@@ -128,6 +138,9 @@
     const reader = new FileReader();
     reader.onload = function (evt) {
       markdownInput.value = evt.target.result;
+      if (!titleInput.value.trim()) {
+        titleInput.value = deriveTitleFromFilename(file.name);
+      }
       setStatus("Loaded " + file.name + ".", false);
       doPreview();
     };
@@ -135,6 +148,22 @@
       setStatus("Failed to read file " + file.name + ".", true);
     };
     reader.readAsText(file);
+  }
+
+  function deleteEntry(entryIndex) {
+    const entry = lastEntries.find(function (e) { return e.index === entryIndex; });
+    if (!entry) return; // stale message from an already-replaced preview
+    const lines = markdownInput.value.split("\n");
+    let deleteEnd = entry.end_line;
+    // Swallow trailing blank lines too, so removing an entry never leaves a
+    // stray double-blank gap before the next heading/entry.
+    while (deleteEnd + 1 < lines.length && lines[deleteEnd + 1].trim() === "") {
+      deleteEnd++;
+    }
+    lines.splice(entry.start_line, deleteEnd - entry.start_line + 1);
+    markdownInput.value = lines.join("\n");
+    setStatus("Entry deleted.", false);
+    doPreview();
   }
 
   function setupDropzone() {
@@ -184,6 +213,13 @@
     debouncedPreview();
   });
   setupDropzone();
+
+  window.addEventListener("message", function (e) {
+    if (e.source !== previewFrame.contentWindow) return;
+    const data = e.data;
+    if (!data || data.type !== "md2pdf-cv:delete-entry") return;
+    deleteEntry(data.entryIndex);
+  });
 
   updateFontLabel();
 

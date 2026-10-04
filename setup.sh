@@ -33,7 +33,6 @@ pip install --upgrade pip
 pip install -r requirements.txt
 
 chmod +x run.command
-mkdir -p output
 
 echo ""
 echo "Setup complete. Double-click run.command to launch md2pdf-cv."

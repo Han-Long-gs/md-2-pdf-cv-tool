@@ -55,10 +55,10 @@ Use `###` (H3) for the company/school line and a plain line for the
 role/degree + dates line. A full entry looks like:
 
 ```markdown
-### University of British Columbia | Vancouver, BC
-Bachelor of Computer Science (BCS) | Sep 2023 – Present
+### State University | City, ST
+B.Sc. Computer Science | Sep 2022 – May 2026
 
-### Acme Corp | Vancouver, BC
+### Acme Corp | City, ST
 *Senior Software Engineer* | Jan 2022 – Present
 
 - Led development of X, improving Y by Z%
@@ -81,7 +81,7 @@ Add a plain line (no `|`) after the role/dates line and before the bullets —
 it doesn't need any special syntax:
 
 ```markdown
-### Acme Corp | Vancouver, BC
+### Acme Corp | City, ST
 *Senior Software Engineer* | Jan 2022 – Present
 Python, FastAPI, PostgreSQL, Docker, AWS
 
@@ -128,12 +128,12 @@ jane@example.com · (555) 555-1234 · City, State · github.com/janedoe
 
 ## Education
 
-### University of British Columbia | Vancouver, BC
-Bachelor of Computer Science (BCS) | Sep 2023 – Present
+### State University | City, ST
+B.Sc. Computer Science | Sep 2022 – May 2026
 
 ## Experience
 
-### Acme Corp | Vancouver, BC
+### Acme Corp | City, ST
 *Senior Software Engineer* | Jan 2022 – Present
 Python, FastAPI, PostgreSQL, Docker, AWS
 

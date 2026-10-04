@@ -2,6 +2,9 @@
    iframe's srcdoc) and for the final WeasyPrint PDF render. Strictly
    grayscale, formal resume aesthetic. */
 
+/* Page geometry below is duplicated (in px, scaled) as constants in
+   gui/preview_interactive.js to simulate page breaks in the on-screen
+   preview — keep both in sync if this changes. */
 @page {
   size: letter;
   margin: 3pt;
@@ -133,7 +136,7 @@ code {
 
 /* Two-column "Left | Right" lines: school/company + location, or
    description/title + dates. Generated from a markdown line containing
-   " | ", e.g. "### University of British Columbia | Vancouver, BC". */
+   " | ", e.g. "### State University | City, ST". */
 .split-line {
   display: flex;
   justify-content: space-between;
@@ -151,4 +154,77 @@ code {
   font-style: normal;
   color: #333;
   flex-shrink: 0;
+}
+
+/* Screen-only preview chrome: WeasyPrint's default media_type is "print",
+   so none of this ever reaches the exported PDF. This is what lets
+   build_html_document() stay the single generator for both preview and PDF
+   — no separate "interactive mode" needed anywhere in the HTML/CSS. */
+@media screen {
+  html {
+    background: #888;
+    overflow-x: hidden;
+  }
+
+  /* Pin the page to its true PDF content-box width (8.5in page - 3pt
+     left/right @page margins = 606pt) so text wraps identically to the
+     PDF; preview_interactive.js scales it down with a CSS transform to fit
+     narrower windows without changing the layout width used for
+     measurement. */
+  body {
+    width: 606pt;
+    margin: 16px auto;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    position: relative;
+    transform-origin: top center;
+  }
+
+  .entry {
+    position: relative;
+  }
+
+  .entry-delete-btn {
+    position: absolute;
+    top: 2px;
+    right: 2px;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    border: 1px solid #a30000;
+    background: #fff;
+    color: #a30000;
+    font-size: 13px;
+    line-height: 1;
+    cursor: pointer;
+    opacity: 0;
+    transition: opacity 0.15s;
+    z-index: 10;
+  }
+
+  .entry:hover .entry-delete-btn {
+    opacity: 1;
+  }
+
+  .page-break-line {
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 0;
+    border-top: 2px dashed #4285f4;
+    z-index: 9;
+    pointer-events: none;
+  }
+
+  .page-break-line::after {
+    content: "Page break";
+    position: absolute;
+    right: 4px;
+    top: -9px;
+    font-size: 8px;
+    background: #4285f4;
+    color: #fff;
+    padding: 1px 4px;
+    border-radius: 2px;
+    font-family: -apple-system, sans-serif;
+  }
 }

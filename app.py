@@ -1,5 +1,6 @@
 """pywebview entry point. Exposes Api to the GUI (gui/index.html) via the
 window.pywebview.api JS bridge."""
+import json
 import os
 
 import webview
@@ -8,8 +9,22 @@ import render
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 USER_HOME = os.path.expanduser("~")
-# OUTPUT_DIR = os.path.join(BASE_DIR, "output")
-OUTPUT_DIR = os.path.join(USER_HOME, "Desktop", "2027-internship")
+CONFIG_PATH = os.path.join(BASE_DIR, "config.json")
+DEFAULT_OUTPUT_DIR = os.path.join(USER_HOME, "Desktop", "md2pdf-cv")
+
+
+def load_output_dir() -> str:
+    """Where PDFs are saved: "output_dir" in config.json (per-user, not
+    committed), else ~/Desktop/md2pdf-cv."""
+    try:
+        with open(CONFIG_PATH, encoding="utf-8") as f:
+            configured = json.load(f).get("output_dir")
+    except (OSError, ValueError, AttributeError):
+        configured = None
+    return os.path.expanduser(configured or DEFAULT_OUTPUT_DIR)
+
+
+OUTPUT_DIR = load_output_dir()
 INDEX_PATH = os.path.join(BASE_DIR, "gui", "index.html")
 
 
@@ -32,8 +47,8 @@ class Api:
         try:
             if not markdown_text or not markdown_text.strip():
                 return {"ok": False, "error": "Markdown text is empty — paste your CV content first."}
-            html_doc = render.build_html_document(markdown_text, int(font_size))
-            return {"ok": True, "html": html_doc}
+            html_doc, entries = render.build_html_document(markdown_text, int(font_size))
+            return {"ok": True, "html": html_doc, "entries": entries}
         except Exception as e:
             return {"ok": False, "error": f"Unexpected error: {e}"}
 
